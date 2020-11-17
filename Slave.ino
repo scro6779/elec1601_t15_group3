@@ -47,14 +47,13 @@ int lState = 0;
 int rState = 0;
 
 int botSpeed = 100;
-int TbotSpeed = 50;
+int turningBotSpeed = 50;
 int botDelay = 200;
-int lOffset = 17;  //bigger is clockwise
+
+int lOffset = 17;
 int rOffset = 10;
 
-
 bool botAuto = false;
-
 
 void setup() {
   
@@ -104,15 +103,16 @@ void loop() {
         recvChar = blueToothSerial.read();
 
         if (recvChar == 'z') {
+          
           botAuto = !botAuto;
 
           if(botAuto) {
             botSpeed = 100;
-            TbotSpeed = 70;
+            turningBotSpeed = 70;
             botDelay = 50;
           } else {
             botSpeed = 100;
-            TbotSpeed = 50;
+            turningBotSpeed = 50;
             botDelay = 200;
           }
           
@@ -151,9 +151,6 @@ void loop() {
     
     int lState = irDetect(9, 10, 38000);
     int rState = irDetect(2, 3, 38000);
-
-//    blueToothSerial.println("Left: " + String(lState));
-//    blueToothSerial.println("Right: " + String(rState));
       
     if(botAuto) {
     
@@ -161,20 +158,15 @@ void loop() {
         moveRobot(1); // 'd'
       } else if(lState == 1 && rState == 0) {
         moveRobot(3); // 'a'
-      } else if(lState == 0 && rState == 0) {
+      } else {
         moveRobot(0); // 'w'
       }
-//       else {
-//        servoLeft.detach();
-//        servoRight.detach();
-//      }
       
     }
 
 }
 
-int irDetect(int irLedPin, int irReceiverPin, long frequency)
-{
+int irDetect(int irLedPin, int irReceiverPin, long frequency) {
   tone(irLedPin, frequency, 8);            // IRLED 38 kHz for at least 1 ms
   delay(1);                               // Wait 1 ms
   int ir = digitalRead(irReceiverPin);    // IR receiver -> ir variable
@@ -191,7 +183,6 @@ void moveRobot(int dir) {
     int leftVal = 0;
     int rightVal = 0;
     int delay_ = 0;
-    String printStmnt = "";
 
     switch (dir) {
 
@@ -199,29 +190,25 @@ void moveRobot(int dir) {
         leftVal = 1500 - botSpeed;
         rightVal = 1500 + botSpeed - 9;
         delay_ = botDelay;
-        printStmnt = "Forward";
         break;
 
       case 2: // back
         leftVal = 1500 + botSpeed - 9;
         rightVal = 1500 - botSpeed;
         delay_ = botDelay;
-        printStmnt = "Backward";
         break;
 
       case 1: // right
-        leftVal = 1500 + TbotSpeed;
-        rightVal = 1500 + TbotSpeed - 9;
+        leftVal = 1500 + turningBotSpeed;
+        rightVal = 1500 + turningBotSpeed - 9;
         delay_ = botDelay * 0.5;
-        printStmnt = "Turning Right";
         break;
 
       case 3: // left
       
-        leftVal = 1500 - TbotSpeed - 9;
-        rightVal = 1500 - TbotSpeed;
+        leftVal = 1500 - turningBotSpeed - 9;
+        rightVal = 1500 - turningBotSpeed;
         delay_ = botDelay * 0.5;
-        printStmnt = "Turning Left";
         break;
 
     }
@@ -232,9 +219,10 @@ void moveRobot(int dir) {
     servoRight.writeMicroseconds(rightVal + rOffset);
 
     if (!botAuto) {
-    servoLeft.detach();
-    servoRight.detach();
+      servoLeft.detach();
+      servoRight.detach();
     }
+  
 }
   
 
