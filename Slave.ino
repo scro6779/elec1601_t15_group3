@@ -119,12 +119,6 @@ void loop() {
           servoLeft.detach();
           servoRight.detach();
           
-        } else if(recvChar == 'o') {
-          
-          servoLeft.detach();
-          servoRight.detach();
-          botAuto = false;
-          
         }
         
         if(!botAuto) {
@@ -154,12 +148,15 @@ void loop() {
       
     if(botAuto) {
     
-      if(lState == 0 && rState == 1) {
-        moveRobot(1); // 'd'
+      if(lState == 0 && rState == 0) {
+        moveRobot(0); // 'w' (forward)
+      } else if(lState == 0 && rState == 1) {
+        moveRobot(1); // 'd' (right)
       } else if(lState == 1 && rState == 0) {
-        moveRobot(3); // 'a'
+        moveRobot(3); // 'a' (left)
       } else {
-        moveRobot(0); // 'w'
+        servoLeft.detach();
+        servoRight.detach();
       }
       
     }
